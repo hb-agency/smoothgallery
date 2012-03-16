@@ -126,26 +126,36 @@ class ContentSmoothgallery extends ContentElement
 			$text = str_ireplace(array('</p>', '<br /><br />'), array("</p>\n", "<br /><br />\n"), $text);
 
 			$this->Template = new FrontendTemplate($this->strTemplate);
+			
+			global $objPage;
 
 			// Use an image instead of the title
 			if (strlen($this->smoothImage) && is_file(TL_ROOT . '/' . $this->smoothImage))
 			{
-		
-
 				$size = deserialize($this->size);
-				$arrImageSize = getimagesize(TL_ROOT . '/' . $this->smoothImage);
-
-				// Adjust image size in the back end
-				if (TL_MODE == 'BE' && $arrImageSize[0] > 640 && ($size[0] > 640 || !$size[0]))
+				$imgSize = getimagesize(TL_ROOT .'/'. $this->smoothImage);
+		
+				if ($intMaxWidth === null)
 				{
-					$size[0] = 640;
-					$size[1] = floor(640 * $arrImageSize[1] / $arrImageSize[0]);
+					$intMaxWidth = (TL_MODE == 'BE') ? 320 : $GLOBALS['TL_CONFIG']['maxImageWidth'];
 				}
-
-				$src = $this->getImage($this->urlEncode($this->smoothImage), $size[0], $size[1]);
-
-				if (($imgSize = @getimagesize(TL_ROOT . '/' . $src)) !== false)
+		
+				// Adjust the image size
+				if ($intMaxWidth > 0 && ($size[0] > $intMaxWidth || (!$size[0] && !$size[1] && $imgSize[0] > $intMaxWidth)))
 				{
+					// See #2268 (thanks to Thyon)
+					$ratio = ($size[0] && $size[1]) ? $size[1] / $size[0] : $imgSize[1] / $imgSize[0];
+		
+					$size[0] = $intMaxWidth;
+					$size[1] = floor($intMaxWidth * $ratio);
+				}
+		
+				$src = $this->getImage($this->smoothImage, $size[0], $size[1], $size[2]);
+		
+				// Image dimensions
+				if (($imgSize = @getimagesize(TL_ROOT .'/'. rawurldecode($src))) !== false)
+				{
+					$this->Template->arrSize = $imgSize;
 					$this->Template->imgSize = ' ' . $imgSize[3];
 				}
 
@@ -167,13 +177,23 @@ class ContentSmoothgallery extends ContentElement
 				// Adjust image size in the back end
 				if (TL_MODE == 'BE')
 				{
-					$thumbsize[0] = 50;
-					$thumbsize[1] = 50;
+					$intMaxWidth = 50;
+				}
+				
+				// Adjust the image size
+				if ($intMaxWidth > 0 && ($thumbsize[0] > $intMaxWidth || (!$thumbsize[0] && !$thumbsize[1] && $arrImageSize[0] > $intMaxWidth)))
+				{
+		
+					// See #2268 (thanks to Thyon)
+					$ratio = ($thumbsize[0] && $thumbsize[1]) ? $thumbsize[1] / $thumbsize[0] : $arrImageSize[1] / $arrImageSize[0];
+		
+					$thumbsize[0] = $intMaxWidth;
+					$thumbsize[1] = floor($intMaxWidth * $ratio);
 				}
 
-				$thumbsrc = $this->getImage($this->urlEncode($this->smoothThumbnail), $thumbsize[0], $thumbsize[1]);
+				$thumbsrc = $this->getImage($this->urlEncode($this->smoothThumbnail), $thumbsize[0], $thumbsize[1], $thumbsize[2]);
 
-				if (($thumbimgSize = @getimagesize(TL_ROOT . '/' . $thumbsrc)) !== false)
+				if (($thumbimgSize = @getimagesize(TL_ROOT . '/' . rawurldecode($thumbsrc))) !== false)
 				{
 					$this->Template->thumbimgSize = ' ' . $thumbimgSize[3];
 				}
