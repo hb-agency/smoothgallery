@@ -1,4 +1,5 @@
 <script type="text/javascript">
+/* <![CDATA[ */
 function startGallery() {
 	var myGallery = new gallery($('<?php echo $this->galleryID; ?>'), {
 		timed: <?php echo $this->timed; ?>,
@@ -32,5 +33,6 @@ function startGallery() {
 	});
 }
 window.addEvent('domready', startGallery);
+/* ]]> */
 </script>
 <div id="<?php echo $this->galleryID; ?>"<?php if ($this->style): ?> style="<?php echo $this->style; ?>"<?php endif; ?>>

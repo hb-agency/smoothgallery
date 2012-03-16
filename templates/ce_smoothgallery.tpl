@@ -8,6 +8,7 @@
 </div>
 <?php if($this->tooltips):?>
 <script type="text/javascript">
+/* <![CDATA[ */
 	window.addEvent('domready', function() {
 	    $('<?php echo $this->groupname; ?>').store('tip:title', "<?php echo $this->headline; ?>");		  
 	    $('<?php echo $this->groupname; ?>').store('tip:text', "<?php echo $this->text; ?>");	  
@@ -19,6 +20,7 @@
 	        fixed: false
 	    });
 	});
+/* ]]> */
 </script>
 <?php endif;?>
 <?php else: ?>
