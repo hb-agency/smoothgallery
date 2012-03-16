@@ -91,7 +91,7 @@ $GLOBALS['TL_DCA']['tl_content']['fields']['smoothThumbsize'] = array
 			'label'                   => &$GLOBALS['TL_LANG']['tl_content']['smoothThumbsize'],
 			'exclude'                 => true,
 			'inputType'               => 'imageSize',
-			'options'                 => array('crop', 'proportional', 'box'),
+			'options'                 => $GLOBALS['TL_CROP'],
 			'reference'               => &$GLOBALS['TL_LANG']['MSC'],
 			'eval'                    => array('rgxp'=>'digit', 'nospace'=>true, 'tl_class'=>'w50')
 		);
